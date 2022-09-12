@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="contenedor">
+
+
+        <form>
+            <fieldset>
+            <legend>
+                Acceso al panel
+            </legend>
+
+            <label>User</label>
+            <input type="text" v-model="usuario">
+
+            <label>Password</label>
+            <input type="password" v-model="password">
+            <button @click ="login">Acceder</button>
+
+            </fieldset>
+
+        </form>
+
+
+    </div>
+    <script type="text/javascript">
+
+        const { createApp } = Vue
+        const data=null
+        const error=null
+
+        var test = createApp({
+        data() {
+            return {
+                users:null,
+                usuario:'',
+                password:''
+            }
+        },methods:{
+            login(e){
+                 e.preventDefault();
+                 var user = this.usuario;
+                 var contra = this.password;
+                //var axios = require('axios');
+                //var FormData = require('form-data');
+                var data = new FormData();
+                data.append('username', user);
+                data.append('password', contra);
+                data.append('request_token', '');
+
+                var config = {
+                  method: 'post',
+                  url: 'https://api.themoviedb.org/3/authentication/token/validate_with_login?api_key=b6f333ccdce46368ecb4a6d7449fd6ee',
+                  headers: { 
+                     
+                    //...data.getHeaders()
+                  },
+                  data : data
+                };
+
+                axios(config)
+                .then(function (response) {
+                  console.log(JSON.stringify(response.data));
+                  
+                  sessionStorage.setItem("user",user);
+                  window.location= "peliculas.html"
+                })
+                .catch(function (error) {
+                  alert("Datos incorrectos")
+                });
+                
+            }
+
+        },mounted(){
+            /*fetch('users.json')
+            .then((res) => res.json())
+            .then((json) => (this.users=json))
+            .catch((err) => (console.log(err)))
+        */}
+
+
+
+        }).mount('#contenedor')
+
+    </script>
+</body>
+</html>

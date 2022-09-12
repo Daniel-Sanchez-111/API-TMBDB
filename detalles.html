@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Detalles</title>
+	<link href="estilo.css" rel="stylesheet" type="text/css">
+	<script src="https://unpkg.com/vue@3"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+	<div id="contenedor">
+			<div class="top">
+				<img v-bind:src="'https://www.themoviedb.org/t/p/w220_and_h330_face'+poster">
+				<div>
+					<h1>{{titulo}}</h3>
+					<h4>{{lineamamona}}</h4>
+					<p>{{desc}}</p>
+					<br><hr>
+					Calificacion: {{calificacion}}<br>
+					Cantidad de votos: {{cantV}}<br>
+					Fecha de estreno: {{fecha}}<br>
+					Estado: {{estado}}
+
+				</div>
+				
+					
+				<input type="number" v-model="reseña" min="1" max="10.0" value="1"><br><br>
+				<button v-on:click="creaReseña">Guardar rating</button>
+				<button v-on:click="eliminaReseña">Eliminar rating</button>	
+			</div>
+				
+
+	</div>
+
+	<script type="text/javascript">
+		
+
+		const { createApp } = Vue
+        const data=null
+        const error=null
+
+        var test = createApp({
+        data() {
+            return {
+                titulo:"",
+                desc:"",
+                lineamamona:"",
+                cantV:0,
+                calificacion:0,
+                estado:"",
+                fecha:"",
+                poster:"",
+                reseña:0,
+                id:sessionStorage.getItem("id"),
+                usuario:sessionStorage.getItem("user"),               
+            }
+        },methods:{
+        	  cargar(){
+        	  	var index = this.id;
+        		var data = new FormData();
+				var config = {
+				  method: 'get',
+				  url: 'https://api.themoviedb.org/3/movie/'+index+'?api_key=b6f333ccdce46368ecb4a6d7449fd6ee&language=es-MX',
+				  headers: { 
+				    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNmYzMzNjY2RjZTQ2MzY4ZWNiNGE2ZDc0NDlmZDZlZSIsInN1YiI6IjYzMWEyNTUxMDAyMTM0MDA3YWU4YzFiMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.WqiaADeldR4ZBVKVEVO9h945KPWmtI7z_8U7ulqHPFA', 
+				    //...data.getHeaders()
+				  },
+				  data : data
+				};
+				var self = this;
+				axios(config)
+				.then(function (response) {
+				  self.titulo=response.data.title;
+				  self.lineamamona=response.data.tagline;
+				  self.desc=response.data.overview;
+				  self.cantV=response.data.vote_count;
+				  self.calificacion=response.data.vote_average;
+				  self.estado=response.data.status;
+				  self.fecha=response.data.release_date;
+				  self.poster=response.data.poster_path;
+
+				})
+				.catch(function (error) {
+				  console.log(error);
+				});
+        	},
+        	creaReseña(){
+        		var index = this.id;
+        		var data = new FormData();
+        		var rate = this.reseña;
+				data.append('value', rate);
+
+				var config = {
+				  method: 'post',
+				  url: 'https://api.themoviedb.org/3/movie/'+index+'/rating?api_key=b6f333ccdce46368ecb4a6d7449fd6ee',
+				  headers: { 
+				    'Content-Type': 'application/json;charset=utf-8', 
+				    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNmYzMzNjY2RjZTQ2MzY4ZWNiNGE2ZDc0NDlmZDZlZSIsInN1YiI6IjYzMWEyNTUxMDAyMTM0MDA3YWU4YzFiMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.WqiaADeldR4ZBVKVEVO9h945KPWmtI7z_8U7ulqHPFA', 
+				    
+				  },
+				  data : data
+				};
+
+				axios(config)
+				.then(function (response) {
+					self.reseña=0;
+				   swal("Correcto", "Rate registrado correctamente", "success");
+				})
+				.catch(function (error) {
+				  console.log(error);
+				});
+        	},
+        	
+			eliminaReseña(){
+
+				var index = this.id;
+				console.log(index);
+				swal({
+				  title: "Estas seguro?",
+				  text: "Se eliminara el rating definitivamente",
+				  icon: "warning",
+				  buttons: true,
+				  dangerMode: true,
+				})
+				.then((willDelete) => {
+				  if (willDelete) {
+				  	
+					var config = {
+					  method: 'delete',
+					  url: 'https://api.themoviedb.org/3/movie/'+index+'/rating?api_key=b6f333ccdce46368ecb4a6d7449fd6ee',
+					  headers: { 
+					    
+					    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNmYzMzNjY2RjZTQ2MzY4ZWNiNGE2ZDc0NDlmZDZlZSIsInN1YiI6IjYzMWEyNTUxMDAyMTM0MDA3YWU4YzFiMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.WqiaADeldR4ZBVKVEVO9h945KPWmtI7z_8U7ulqHPFA', 
+					    //...data.getHeaders()
+					  },
+					  
+					};
+
+					axios(config)
+					.then(function (response) {
+					  swal("El rating ha sido eliminado correctamente", {
+				      icon: "success",
+				  	  });
+					})
+					.catch(function (error) {
+					  swal("Se ha producido un error al eliminar el rating", {
+				      icon: "error",
+				  	  });
+					  console.log(error);
+					});
+				    
+				  } else {
+				    swal("Se ha cancelado la eliminacion");
+				  }
+				});
+            	
+            }
+
+        	
+			},
+        	mounted(){
+        		this.cargar();
+          	}
+    	}).mount('#contenedor')
+		
+</script>
+</body>
+</html>
